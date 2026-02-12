@@ -45,7 +45,27 @@ router.post("/register", validate(registerSchema), register);
  *   post:
  *     summary: Login usuario
  *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: usuario@email.com
+ *               password:
+ *                 type: string
+ *                 example: 123456
+ *     responses:
+ *       200:
+ *         description: Login exitoso
  */
+
 router.post("/login", validate(loginSchema), login);
 
 export default router;
