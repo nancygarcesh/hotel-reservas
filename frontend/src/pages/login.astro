@@ -1,7 +1,8 @@
 ---
+import Layout from "@/layouts/Layout.astro";
 import LoginForm from "@/components/auth/LoginForm";
-import "@/styles/global.css"
-
 ---
 
-<LoginForm client:load />
+<Layout>
+  <LoginForm client:load />
+</Layout>
