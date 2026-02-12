@@ -14,6 +14,7 @@ configureApp(app);
 
 app.use("/api", routes);
 app.use(errorHandler);
+app.use("/uploads", express.static("src/uploads"));
 
 const PORT = process.env.PORT || 4000;
 
