@@ -5,10 +5,20 @@ export default function Header() {
   const logout = useAuthStore((s) => s.logout);
   const toggleDark = useUIStore((s) => s.toggleDark);
 
+  const handleLogout = () => {
+    logout();
+    window.location.href = "/login";
+  };
+
   return (
     <header className="flex justify-between p-4 shadow">
-      <button onClick={toggleDark}>Toggle Theme</button>
-      <button onClick={logout}>Logout</button>
+      <button onClick={toggleDark}>
+        Cambiar tema
+      </button>
+
+      <button onClick={handleLogout}>
+        Cerrar sesión
+      </button>
     </header>
   );
 }
