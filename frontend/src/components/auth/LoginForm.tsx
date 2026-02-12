@@ -4,13 +4,33 @@ import { useAuthStore } from "@/store/authStore";
 export default function LoginForm() {
   const login = useAuthStore((s) => s.login);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({
+    email: "",
+    password: ""
+  });
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e: any) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    await login(email, password);
-    window.location.href = "/dashboard";
+
+    try {
+      setLoading(true);
+      await login(form.email, form.password);
+      window.location.href = "/dashboard";
+    } catch (err: any) {
+      setError(
+        err.response?.data?.message ||
+          "Credenciales incorrectas"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -19,21 +39,27 @@ export default function LoginForm() {
       className="max-w-md mx-auto mt-20 flex flex-col gap-4"
     >
       <input
-        type="email"
+        name="email"
         placeholder="Correo"
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={handleChange}
         required
       />
 
       <input
         type="password"
+        name="password"
         placeholder="Contraseña"
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={handleChange}
         required
       />
 
-      <button className="bg-hotel-accent p-2 text-white">
-        Login
+      {error && <span className="text-red-500">{error}</span>}
+
+      <button
+        disabled={loading}
+        className="bg-hotel-accent p-2 text-white"
+      >
+        {loading ? "Ingresando..." : "Login"}
       </button>
     </form>
   );

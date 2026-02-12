@@ -1,12 +1,12 @@
-import { defineConfig } from 'astro/config';
-import react from '@astrojs/react';
-import tailwind from '@astrojs/tailwind';
+import { defineConfig } from "astro/config";
+import react from "@astrojs/react";
+import tailwind from "@astrojs/tailwind";
 
 export default defineConfig({
-  integrations: [react(), tailwind()],
-  output: 'server',
-  site: 'http://localhost:4321',
-  build: {
-    format: 'directory'
-  }
+  integrations: [
+    react(),
+    tailwind({
+      applyBaseStyles: false
+    })
+  ]
 });
