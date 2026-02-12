@@ -6,6 +6,7 @@ export default defineConfig({
   integrations: [react(), tailwind()],
   output: 'server',
   site: 'http://localhost:4321',
+
   build: {
     format: 'directory'
   }
