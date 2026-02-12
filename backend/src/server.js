@@ -5,6 +5,8 @@ import { configureApp } from "./config/appConfig.js";
 import routes from "./routes/index.js";
 import { errorHandler } from "./middlewares/errorMiddleware.js";
 import { syncModels } from "./database/syncModels.js";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swaggerConfig.js";
 
 dotenv.config();
 
@@ -15,6 +17,7 @@ configureApp(app);
 app.use("/api", routes);
 app.use(errorHandler);
 app.use("/uploads", express.static("src/uploads"));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const PORT = process.env.PORT || 4000;
 
