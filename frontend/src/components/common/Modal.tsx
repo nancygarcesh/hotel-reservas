@@ -65,7 +65,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   if (!isOpen) return null
 
-  const sizes = {
+  const sizes: Record<'sm' | 'md' | 'lg' | 'xl', string> = {
     sm: 'max-w-md',
     md: 'max-w-lg',
     lg: 'max-w-2xl',
@@ -144,7 +144,11 @@ export const Modal: React.FC<ModalProps> = ({
   )
 }
 
-export const ConfirmModal: React.FC<{
+// -------------------- ConfirmModal --------------------
+
+type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'warning'
+
+interface ConfirmModalProps {
   isOpen: boolean
   onClose: () => void
   onConfirm: () => void
@@ -154,7 +158,9 @@ export const ConfirmModal: React.FC<{
   cancelText?: string
   isLoading?: boolean
   variant?: 'danger' | 'warning' | 'info'
-}> = ({
+}
+
+export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
@@ -165,7 +171,10 @@ export const ConfirmModal: React.FC<{
   isLoading = false,
   variant = 'danger'
 }) => {
-  const variantStyles = {
+  const variantStyles: Record<
+    'danger' | 'warning' | 'info',
+    { button: ButtonVariant; icon: React.ReactElement }
+  > = {
     danger: {
       button: 'danger',
       icon: (
@@ -200,33 +209,19 @@ export const ConfirmModal: React.FC<{
       showCloseButton={false}
     >
       <div className="flex items-start">
-        <div className="flex-shrink-0">
-          {variantStyles[variant].icon}
-        </div>
+        <div className="flex-shrink-0">{variantStyles[variant].icon}</div>
         <div className="ml-3">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-            {title}
-          </h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white">{title}</h3>
           <div className="mt-2">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {message}
-            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{message}</p>
           </div>
         </div>
       </div>
       <div className="mt-6 flex justify-end gap-3">
-        <Button
-          variant="secondary"
-          onClick={onClose}
-          disabled={isLoading}
-        >
+        <Button variant="secondary" onClick={onClose} disabled={isLoading}>
           {cancelText}
         </Button>
-        <Button
-          variant={variantStyles[variant].button as any}
-          onClick={onConfirm}
-          isLoading={isLoading}
-        >
+        <Button variant={variantStyles[variant].button} onClick={onConfirm} isLoading={isLoading}>
           {confirmText}
         </Button>
       </div>

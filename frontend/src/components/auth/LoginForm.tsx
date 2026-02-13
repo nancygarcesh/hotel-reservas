@@ -57,8 +57,13 @@ export const LoginForm: React.FC = () => {
       await login(formData)
       showSuccess('¡Bienvenido!')
       navigate('/dashboard')
-    } catch (err: any) {
-      showError(err.message || 'Error al iniciar sesión')
+    } catch (err) {
+      // ✅ Manejo seguro sin usar `any`
+      if (err instanceof Error) {
+        showError(err.message)
+      } else {
+        showError('Error al iniciar sesión')
+      }
     }
   }
 

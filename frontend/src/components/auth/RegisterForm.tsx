@@ -62,7 +62,7 @@ export const RegisterForm: React.FC = () => {
       return
     }
 
-    const { confirmPassword, ...registerData } = formData
+    const { ...registerData } = formData
     const { error } = registerSchema.validate(registerData)
 
     if (error) {
@@ -80,8 +80,12 @@ export const RegisterForm: React.FC = () => {
       await register(registerData)
       showSuccess('¡Registro exitoso! Por favor inicia sesión')
       navigate('/login')
-    } catch (err: any) {
-      showError(err.message || 'Error al registrar usuario')
+    } catch (err) {
+      if (err instanceof Error) {
+        showError(err.message)
+      } else {
+        showError('Error al registrar usuario')
+      }
     }
   }
 
