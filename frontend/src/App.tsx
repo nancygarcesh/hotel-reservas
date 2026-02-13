@@ -4,7 +4,7 @@ import { useAuthStore } from './store/authStore'
 import { useThemeStore } from './store/uiStore'
 import Layout from './components/layout/Layout'
 import PrivateRoute from './components/common/PrivateRoute'
-import ErrorBoundary from './components/common/ErrorBoundary'
+import { ErrorBoundary } from './components/common/ErrorBoundary'
 
 //pages
 import Login from './pages/Login'

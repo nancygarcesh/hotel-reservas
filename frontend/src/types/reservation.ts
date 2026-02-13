@@ -1,3 +1,4 @@
+import { Room } from '@/types'
 export type ReservationStatus = 'pendiente' | 'confirmada' | 'cancelada' | 'completada'
 
 export interface Reservation {

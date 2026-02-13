@@ -1,6 +1,19 @@
 import { create } from 'zustand'
+import { AxiosError } from 'axios'
 import { Room, RoomFilters, CreateRoomData, UpdateRoomData } from '@/types'
 import { roomService } from '@/services/roomService'
+
+interface ApiError {
+  message: string
+}
+
+const getErrorMessage = (error: unknown, defaultMsg: string): string => {
+  if (error instanceof AxiosError && error.response?.data) {
+    const data = error.response.data as ApiError
+    return data.message || defaultMsg
+  }
+  return defaultMsg
+}
 
 interface RoomStore {
   rooms: Room[]
@@ -22,6 +35,7 @@ interface RoomStore {
 }
 
 export const useRoomStore = create<RoomStore>((set, get) => ({
+
   rooms: [],
   currentRoom: null,
   isLoading: false,
@@ -29,98 +43,122 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
   totalRooms: 0,
   filters: {},
 
-  fetchRooms: async (filters) => {
+  fetchRooms: async (filters?: RoomFilters) => {
     try {
       set({ isLoading: true, error: null })
+
       const currentFilters = filters || get().filters
       const response = await roomService.getRooms(currentFilters)
-      set({ 
-        rooms: response, 
+
+      set({
+        rooms: response,
         totalRooms: response.length,
         isLoading: false,
         filters: currentFilters
       })
-    } catch (error: any) {
-      set({ 
-        error: error.response?.data?.message || 'Error al cargar habitaciones',
-        isLoading: false 
+
+    } catch (error: unknown) {
+      set({
+        error: getErrorMessage(error, 'Error al cargar habitaciones'),
+        isLoading: false
       })
     }
   },
 
-  fetchRoomById: async (id) => {
+  fetchRoomById: async (id: number) => {
     try {
       set({ isLoading: true, error: null })
+
       const room = await roomService.getRoomById(id)
-      set({ currentRoom: room, isLoading: false })
-    } catch (error: any) {
-      set({ 
-        error: error.response?.data?.message || 'Error al cargar habitación',
-        isLoading: false 
+
+      set({
+        currentRoom: room,
+        isLoading: false
+      })
+
+    } catch (error: unknown) {
+      set({
+        error: getErrorMessage(error, 'Error al cargar habitación'),
+        isLoading: false
       })
     }
   },
 
-  createRoom: async (data) => {
+  createRoom: async (data: CreateRoomData) => {
     try {
       set({ isLoading: true, error: null })
+
       const newRoom = await roomService.createRoom(data)
-      set((state) => ({ 
+
+      set((state) => ({
         rooms: [...state.rooms, newRoom],
         totalRooms: state.totalRooms + 1,
-        isLoading: false 
+        isLoading: false
       }))
+
       return newRoom
-    } catch (error: any) {
-      set({ 
-        error: error.response?.data?.message || 'Error al crear habitación',
-        isLoading: false 
+
+    } catch (error: unknown) {
+      set({
+        error: getErrorMessage(error, 'Error al crear habitación'),
+        isLoading: false
       })
       throw error
     }
   },
 
-  updateRoom: async (id, data) => {
+  updateRoom: async (id: number, data: UpdateRoomData) => {
     try {
       set({ isLoading: true, error: null })
+
       const updatedRoom = await roomService.updateRoom(id, data)
+
       set((state) => ({
-        rooms: state.rooms.map(room => 
+        rooms: state.rooms.map(room =>
           room.id === id ? updatedRoom : room
         ),
         currentRoom: updatedRoom,
         isLoading: false
       }))
+
       return updatedRoom
-    } catch (error: any) {
-      set({ 
-        error: error.response?.data?.message || 'Error al actualizar habitación',
-        isLoading: false 
+
+    } catch (error: unknown) {
+      set({
+        error: getErrorMessage(error, 'Error al actualizar habitación'),
+        isLoading: false
       })
       throw error
     }
   },
 
-  deleteRoom: async (id) => {
+  deleteRoom: async (id: number) => {
     try {
       set({ isLoading: true, error: null })
+
       await roomService.deleteRoom(id)
+
       set((state) => ({
         rooms: state.rooms.filter(room => room.id !== id),
         totalRooms: state.totalRooms - 1,
         isLoading: false
       }))
-    } catch (error: any) {
-      set({ 
-        error: error.response?.data?.message || 'Error al eliminar habitación',
-        isLoading: false 
+
+    } catch (error: unknown) {
+      set({
+        error: getErrorMessage(error, 'Error al eliminar habitación'),
+        isLoading: false
       })
       throw error
     }
   },
 
-  setFilters: (filters) => set({ filters }),
+  setFilters: (filters: RoomFilters) => set({ filters }),
+
   clearFilters: () => set({ filters: {} }),
+
   clearCurrentRoom: () => set({ currentRoom: null }),
-  setError: (error) => set({ error })
+
+  setError: (error: string | null) => set({ error })
+
 }))

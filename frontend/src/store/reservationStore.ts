@@ -1,6 +1,20 @@
 import { create } from 'zustand'
+import { AxiosError } from 'axios'
 import { Reservation, CreateReservationData, UpdateReservationData } from '@/types'
 import { reservationService } from '@/services/reservationService'
+
+interface ApiError {
+  message: string
+}
+
+const getErrorMessage = (error: unknown, defaultMsg: string): string => {
+  if (error instanceof AxiosError) {
+    const axiosError = error as AxiosError<ApiError>
+    return axiosError.response?.data?.message || defaultMsg
+  }
+
+  return defaultMsg
+}
 
 interface ReservationStore {
   reservations: Reservation[]
@@ -20,7 +34,8 @@ interface ReservationStore {
   setError: (error: string | null) => void
 }
 
-export const useReservationStore = create<ReservationStore>((set, get) => ({
+export const useReservationStore = create<ReservationStore>((set) => ({
+
   reservations: [],
   currentReservation: null,
   isLoading: false,
@@ -30,16 +45,19 @@ export const useReservationStore = create<ReservationStore>((set, get) => ({
   fetchReservations: async () => {
     try {
       set({ isLoading: true, error: null })
+
       const reservations = await reservationService.getAllReservations()
-      set({ 
-        reservations, 
+
+      set({
+        reservations,
         totalReservations: reservations.length,
-        isLoading: false 
+        isLoading: false
       })
-    } catch (error: any) {
-      set({ 
-        error: error.response?.data?.message || 'Error al cargar reservas',
-        isLoading: false 
+
+    } catch (error: unknown) {
+      set({
+        error: getErrorMessage(error, 'Error al cargar reservas'),
+        isLoading: false
       })
     }
   },
@@ -47,99 +65,121 @@ export const useReservationStore = create<ReservationStore>((set, get) => ({
   fetchMyReservations: async () => {
     try {
       set({ isLoading: true, error: null })
+
       const reservations = await reservationService.getMyReservations()
-      set({ 
-        reservations, 
+
+      set({
+        reservations,
         totalReservations: reservations.length,
-        isLoading: false 
+        isLoading: false
       })
-    } catch (error: any) {
-      set({ 
-        error: error.response?.data?.message || 'Error al cargar tus reservas',
-        isLoading: false 
+
+    } catch (error: unknown) {
+      set({
+        error: getErrorMessage(error, 'Error al cargar tus reservas'),
+        isLoading: false
       })
     }
   },
 
-  fetchReservationById: async (id) => {
+  fetchReservationById: async (id: number) => {
     try {
       set({ isLoading: true, error: null })
+
       const reservation = await reservationService.getReservationById(id)
-      set({ currentReservation: reservation, isLoading: false })
-    } catch (error: any) {
-      set({ 
-        error: error.response?.data?.message || 'Error al cargar reserva',
-        isLoading: false 
+
+      set({
+        currentReservation: reservation,
+        isLoading: false
+      })
+
+    } catch (error: unknown) {
+      set({
+        error: getErrorMessage(error, 'Error al cargar reserva'),
+        isLoading: false
       })
     }
   },
 
-  createReservation: async (data) => {
+  createReservation: async (data: CreateReservationData) => {
     try {
       set({ isLoading: true, error: null })
+
       const newReservation = await reservationService.createReservation(data)
+
       set((state) => ({
         reservations: [...state.reservations, newReservation],
         totalReservations: state.totalReservations + 1,
         isLoading: false
       }))
+
       return newReservation
-    } catch (error: any) {
-      set({ 
-        error: error.response?.data?.message || 'Error al crear reserva',
-        isLoading: false 
+
+    } catch (error: unknown) {
+      set({
+        error: getErrorMessage(error, 'Error al crear reserva'),
+        isLoading: false
       })
       throw error
     }
   },
 
-  updateReservation: async (id, data) => {
+  updateReservation: async (id: number, data: UpdateReservationData) => {
     try {
       set({ isLoading: true, error: null })
+
       const updatedReservation = await reservationService.updateReservation(id, data)
+
       set((state) => ({
-        reservations: state.reservations.map(reservation => 
+        reservations: state.reservations.map(reservation =>
           reservation.id === id ? updatedReservation : reservation
         ),
         currentReservation: updatedReservation,
         isLoading: false
       }))
+
       return updatedReservation
-    } catch (error: any) {
-      set({ 
-        error: error.response?.data?.message || 'Error al actualizar reserva',
-        isLoading: false 
+
+    } catch (error: unknown) {
+      set({
+        error: getErrorMessage(error, 'Error al actualizar reserva'),
+        isLoading: false
       })
       throw error
     }
   },
 
-  deleteReservation: async (id) => {
+  deleteReservation: async (id: number) => {
     try {
       set({ isLoading: true, error: null })
+
       await reservationService.deleteReservation(id)
+
       set((state) => ({
-        reservations: state.reservations.filter(reservation => reservation.id !== id),
+        reservations: state.reservations.filter(res => res.id !== id),
         totalReservations: state.totalReservations - 1,
         isLoading: false
       }))
-    } catch (error: any) {
-      set({ 
-        error: error.response?.data?.message || 'Error al eliminar reserva',
-        isLoading: false 
+
+    } catch (error: unknown) {
+      set({
+        error: getErrorMessage(error, 'Error al eliminar reserva'),
+        isLoading: false
       })
       throw error
     }
   },
 
-  checkAvailability: async (roomId, startDate, endDate) => {
+  checkAvailability: async (roomId: number, startDate: string, endDate: string) => {
     try {
       return await reservationService.checkAvailability(roomId, startDate, endDate)
-    } catch (error) {
+    } catch {
       return false
     }
   },
 
   clearCurrentReservation: () => set({ currentReservation: null }),
-  setError: (error) => set({ error })
+
+  setError: (error: string | null) => set({ error })
+
 }))
