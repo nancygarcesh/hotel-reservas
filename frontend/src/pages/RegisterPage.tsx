@@ -11,7 +11,7 @@ const RegisterPage = () => {
   const navigate = useNavigate();
 
   const [form, setForm] = useState<RegisterForm>({
-    nombre: "",
+    name: "",
     email: "",
     password: ""
   });
@@ -22,7 +22,7 @@ const RegisterPage = () => {
   const validate = () => {
     const err: FormErrors = {};
 
-    if (!form.nombre) err.nombre = "Nombre requerido";
+    if (!form.name) err.nombre = "Nombre requerido";
 
     if (!validateEmail(form.email))
       err.email = "Email inválido";

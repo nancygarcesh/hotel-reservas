@@ -6,7 +6,7 @@ export interface LoginForm {
 }
 
 export interface RegisterForm {
-  nombre: string;
+  name: string;
   email: string;
   password: string;
 }
