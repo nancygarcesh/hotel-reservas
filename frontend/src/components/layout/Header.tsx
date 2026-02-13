@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { useUIStore } from '@/store/uiStore'
 import { ThemeToggle } from '../ui/ThemeToggle'
-import { Button } from '../ui/Button'
 import { getInitials } from '@/utils/helpers'
 
 export const Header: React.FC = () => {

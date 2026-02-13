@@ -8,6 +8,9 @@ import { Button } from '../ui/Button'
 import { ROOM_TYPES, AMENITIES, ROOM_STATUS } from '@/utils/constants'
 import { roomSchema } from '@/utils/validators'
 import { Room } from '@/types'
+import clsx from 'clsx'
+
+const cn = clsx
 
 interface RoomFormProps {
   initialData?: Room

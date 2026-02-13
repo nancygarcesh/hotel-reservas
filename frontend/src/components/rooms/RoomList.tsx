@@ -4,7 +4,6 @@ import { useAuth } from '@/hooks/useAuth'
 import { useToast } from '@/hooks/useToast'
 import { RoomCard } from './RoomCard'
 import { RoomFilters } from './RoomFilters'
-import { Loader } from '../common/Loader'
 import { RoomCardSkeleton } from '../common/Skeleton'
 import { ConfirmModal } from '../common/Modal'
 

@@ -7,10 +7,19 @@ import { ROOM_STATUS, ROOM_TYPES } from '@/utils/constants'
 
 export const RoomFilters: React.FC = () => {
   const { filters, setFilters, clearFilters } = useRooms()
-  const [localFilters, setLocalFilters] = useState(filters)
 
-  const handleChange = (name: string, value: any) => {
-    setLocalFilters(prev => ({ ...prev, [name]: value }))
+  type FiltersType = typeof filters
+
+  const [localFilters, setLocalFilters] = useState<FiltersType>(filters)
+
+  const handleChange = <K extends keyof FiltersType>(
+    name: K,
+    value: FiltersType[K]
+  ) => {
+    setLocalFilters(prev => ({
+      ...prev,
+      [name]: value
+    }))
   }
 
   const applyFilters = () => {
@@ -18,7 +27,7 @@ export const RoomFilters: React.FC = () => {
   }
 
   const handleClear = () => {
-    setLocalFilters({})
+    setLocalFilters({} as FiltersType)
     clearFilters()
   }
 
@@ -29,6 +38,7 @@ export const RoomFilters: React.FC = () => {
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
         <Select
           label="Estado"
           options={[
@@ -39,7 +49,9 @@ export const RoomFilters: React.FC = () => {
             }))
           ]}
           value={localFilters.status || ''}
-          onChange={(e) => handleChange('status', e.target.value || undefined)}
+          onChange={(e) =>
+                handleChange('status', (e.target.value || undefined) as typeof filters.status)
+          }
         />
 
         <Select
@@ -52,25 +64,34 @@ export const RoomFilters: React.FC = () => {
             }))
           ]}
           value={localFilters.type || ''}
-          onChange={(e) => handleChange('type', e.target.value || undefined)}
+          onChange={(e) =>
+            handleChange('type', e.target.value || undefined)
+          }
         />
 
         <Input
           label="Capacidad mínima"
           type="number"
           min="1"
-          value={localFilters.capacity || ''}
-          onChange={(e) => handleChange('capacity', e.target.value ? Number(e.target.value) : undefined)}
+          value={localFilters.capacity ?? ''}
+          onChange={(e) =>
+            handleChange(
+              'capacity',
+              e.target.value ? Number(e.target.value) : undefined
+            )
+          }
         />
 
         <div className="flex items-end gap-2">
           <Button onClick={applyFilters} variant="primary" className="flex-1">
             Aplicar
           </Button>
+
           <Button onClick={handleClear} variant="secondary">
             Limpiar
           </Button>
         </div>
+
       </div>
     </div>
   )
