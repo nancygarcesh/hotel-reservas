@@ -7,7 +7,7 @@ const Header = () => {
 
   return (
     <header className="bg-white dark:bg-gray-800 p-4 flex justify-between">
-      <span>{user?.nombre}</span>
+      <span>{user?.name}</span>
 
       <div className="flex gap-4">
         <button onClick={toggle}>Tema</button>

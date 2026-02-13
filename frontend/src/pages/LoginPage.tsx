@@ -50,7 +50,7 @@ const LoginPage = () => {
 
       const res = await loginRequest(form);
 
-      setAuth(res.usuario, res.token);
+      setAuth(res.user, res.token);
 
       navigate("/dashboard");
 
@@ -67,6 +67,10 @@ const LoginPage = () => {
     } finally {
       setLoading(false);
     }
+
+    const res = await loginRequest(form);
+    console.log("LOGIN RESPONSE =>", res);
+
   };
 
   return (

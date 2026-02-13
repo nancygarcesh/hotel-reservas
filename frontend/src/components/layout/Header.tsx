@@ -21,7 +21,7 @@ const Header = ({ toggleSidebar }: Props) => {
 
       <div className="flex items-center gap-4">
         <span className="font-medium">
-          Hola, {user?.nombre}
+          Hola, {user?.name}
         </span>
 
         <button
